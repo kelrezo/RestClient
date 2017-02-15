@@ -8,6 +8,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace RestClient
 {
@@ -18,6 +20,7 @@ namespace RestClient
  
             string url = "https://acadianasoftwaregroup.org/#/";
             var request = (HttpWebRequest)WebRequest.Create(url);
+          
             request.Method = "get";
             var response = request.GetResponse();
             var content = response.GetResponseStream();
@@ -45,33 +48,14 @@ namespace RestClient
                 receiveContent = reader.ReadToEnd();
                 reader.Close();
             }
-            
-            Console.WriteLine(receiveContent);
-            Console.WriteLine();
+            dynamic articles = JsonConvert.DeserializeObject(receiveContent);
+            foreach (var article in articles)
+            {
+                Console.WriteLine(article.title);
+            }
+
             Console.ReadLine();
-            //HttpClient client = new HttpClient();
-            //client.BaseAddress = new Uri(url);
-            //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            //var get = client.GetStreamAsync("/");
-
-            //var response = get.Result;
-            //byte[] x = new byte[1117];
-            //response.Read(x, 0,1117);
-            //response.Headers.Add("Content-Type","text/html");
-            // Debug.WriteLine(response.Content.Headers);
-            //foreach (var data in response.Content.ReadAsHttpResponseMessageAsync().ToString())
-            //{
-            //    Debug.WriteLine(data);
-            //} 
-            //var dataObjects = response.Content.ReadAsAsync<IEnumerable<string>>().Result;
-            //foreach (var d in dataObjects)
-            //{
-            //    Console.WriteLine("{0}", d.Name);
-            //}
-            //Debug.WriteLine(response.Content.);
-            //var data = response.Content.ReadAsByteArrayAsync();
-
-            // Debug.WriteLine(response.Content.);
+          
         }
 
     }
