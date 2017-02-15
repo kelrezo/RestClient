@@ -29,7 +29,26 @@ namespace RestClient
                 receiveContent = reader.ReadToEnd();
                 reader.Close();              
             }
-            Debug.WriteLine(receiveContent);
+
+            //Console.WriteLine(receiveContent);
+            url = "https://acadianasoftwaregroup.org/api/cms?o=10&s=0";
+            request = (HttpWebRequest)WebRequest.Create(url);
+            request.Method = "get";
+            response = request.GetResponse();
+            
+            content = response.GetResponseStream();
+            responseStream = response.GetResponseStream();
+            receiveContent = "";
+            if (responseStream != null)
+            {
+                var reader = new StreamReader(responseStream);
+                receiveContent = reader.ReadToEnd();
+                reader.Close();
+            }
+            
+            Console.WriteLine(receiveContent);
+            Console.WriteLine();
+            Console.ReadLine();
             //HttpClient client = new HttpClient();
             //client.BaseAddress = new Uri(url);
             //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
