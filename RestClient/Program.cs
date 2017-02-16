@@ -63,38 +63,28 @@ namespace RestClient
             dynamic baord = request(string.Format(url4,""));
             dynamic boardId;
             dynamic authorId;
-            int i = 0;
             //each board
             foreach (var board in baord)
+
             {
-               // if (i == 1)
-               // {
-                   // Console.WriteLine(board);
-                    boardId = board.boardId;
-                    authorId = board.authorId;
-                    Console.WriteLine(boardId + "           " + authorId);
-                    dynamic threads = request(string.Format(url4, boardId));
-                    //each thread in board
-                    foreach (var thread in threads)
+
+                boardId = board.boardId;
+                authorId = board.authorId;
+                Console.WriteLine(boardId + "           " + authorId);
+                dynamic threads = request(string.Format(url4, boardId));
+                //each thread in board
+                foreach (var thread in threads)
+                {
+                    dynamic posts = request(string.Format(url7, boardId, thread.threadId));
+                    Console.WriteLine(posts);
+                    //each post in thread
+                    foreach (var post in posts)
                     {
-                        //Console.WriteLine(request(string.Format(url5, boardId, thread.threadId)));
-                        //Console.WriteLine("Author: " + request(string.Format(url2, thread.authorId)).name);
-                        dynamic posts = request(string.Format(url7, boardId, thread.threadId));
-                        Console.WriteLine(posts);
-                        //each post in thread
-                        foreach (var post in posts)
-                        {
-                           //Console.WriteLine(post.authorId);
-                            Console.WriteLine(request(string.Format(url2,post.authorId)).name);
-                        break;
-                        }
-                        //Console.WriteLine( post.authorId);
-                        // Console.WriteLine(string.Format(url5, boardId, thread.threadId));                   
-                        //Console.WriteLine(thread);
-                        break;
+                        Console.WriteLine(post);
+                        Console.WriteLine(request(string.Format(url2,post.authorId)).name);
                     }
-               // }
-               // i++;
+                    break;
+                 }
                 break;
             }
 
