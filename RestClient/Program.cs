@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace RestClient
 {
@@ -18,58 +19,57 @@ namespace RestClient
             string url5 = "https://acadianasoftwaregroup.org/api/bb/{0}/{1}";
 
             Console.WriteLine("Articles\n");
-            dynamic articles = request(url1);
-            List<dynamic> writers = new List<dynamic>();
+            var articles = request(url1);
             foreach (var article in articles)
             {
-                Console.WriteLine("Title: " + article.title);
-                Console.WriteLine("Author: " + request(string.Format(url2, article.authorId)).name);
+                Console.WriteLine("Title: " + (string)article["title"]);
+                Console.WriteLine("Author: " + request2(string.Format(url2, article["authorId"]))["name"]);
                 Console.WriteLine("----------------------------------------------------------------------");
             }
 
             Console.WriteLine("\nEvents\n");
             DateTime end = DateTime.UtcNow;
             DateTime start = end.AddMonths(-6);
-            dynamic events = request(string.Format(url3, start.ToString("o"), end.ToString("o")));
+            var events = request(string.Format(url3, start.ToString("o"), end.ToString("o")));
             foreach (var meet in events)
             {
                 Console.WriteLine(meet);
             }
 
             Console.WriteLine("\nPost in first Thread\n");
-   
-            dynamic baord = request(string.Format(url4,""));
-            dynamic boardId;
-            dynamic authorId;
+            var boards = request(string.Format(url4, ""));
             //each board
-            foreach (var board in baord)
-
+            foreach (var board in boards)
             {
-
-                boardId = board.boardId;
-                authorId = board.authorId;
-                Console.WriteLine(boardId + "           " + authorId);
-                dynamic threads = request(string.Format(url4, boardId));
+                Console.WriteLine(board);
+                var threads = request(string.Format(url4, board["boardId"]));
+                Console.WriteLine(threads);
                 //each thread in board
                 foreach (var thread in threads)
                 {
-                    dynamic posts = request(string.Format(url5, boardId, thread.threadId));
-                    Console.WriteLine(posts);
+                    var posts = request(string.Format(url5, thread["boardId"], thread["threadId"]));
                     //each post in thread
                     foreach (var post in posts)
                     {
                         Console.WriteLine(post);
-                        Console.WriteLine(request(string.Format(url2,post.authorId)).name);
+                        Console.WriteLine(request2(string.Format(url2, post["authorID"])));
                     }
                     break;
-                 }
+                }
                 break;
             }
-
-            Console.ReadLine();
-          
+            Console.ReadLine();         
         }
-        static dynamic request(string url)
+        
+        static JArray request(string url)
+        {
+            return (JArray)JsonConvert.DeserializeObject(getRequest(url));
+        }
+        static JObject request2(string url)
+        {
+            return (JObject)JsonConvert.DeserializeObject(getRequest(url));
+        }
+        static string getRequest(string url)
         {
             var request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "get";
@@ -83,7 +83,7 @@ namespace RestClient
                 receiveContent = reader.ReadToEnd();
                 reader.Close();
             }
-            return JsonConvert.DeserializeObject(receiveContent);
+            return receiveContent;
         }
 
     }
